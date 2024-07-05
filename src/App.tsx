@@ -10,33 +10,15 @@ import Coins from './icons/Coins';
 
 const App: React.FC = () => {
   const levelNames = [
-    "Bronze",    // From 0 to 4999 coins
-    "Silver",    // From 5000 coins to 24,999 coins
-    "Gold",      // From 25,000 coins to 99,999 coins
-    "Platinum",  // From 100,000 coins to 999,999 coins
-    "Diamond",   // From 1,000,000 coins to 2,000,000 coins
-    "Epic",      // From 2,000,000 coins to 10,000,000 coins
-    "Legendary", // From 10,000,000 coins to 50,000,000 coins
-    "Master",    // From 50,000,000 coins to 100,000,000 coins
-    "GrandMaster", // From 100,000,000 coins to 1,000,000,000 coins
-    "Lord"       // From 1,000,000,000 coins to ∞
+    "Bronze", "Silver", "Gold", "Platinum", "Diamond", "Epic", "Legendary", "Master", "GrandMaster", "Lord"
   ];
 
   const levelMinPoints = [
-    0,        // Bronze
-    5000,     // Silver
-    25000,    // Gold
-    100000,   // Platinum
-    1000000,  // Diamond
-    2000000,  // Epic
-    10000000, // Legendary
-    50000000, // Master
-    100000000,// GrandMaster
-    1000000000// Lord
+    0, 5000, 25000, 100000, 1000000, 2000000, 10000000, 50000000, 100000000, 1000000000
   ];
 
   const [levelIndex, setLevelIndex] = useState(6);
-  const [points, setPoints] = useState(22749365);
+  const [points, setPoints] = useState(0);
   const [clicks, setClicks] = useState<{ id: number, x: number, y: number }[]>([]);
   const pointsToAdd = 11;
   const profitPerHour = 126420;
@@ -75,6 +57,23 @@ const App: React.FC = () => {
     const interval = setInterval(updateCountdowns, 60000); // Update every minute
 
     return () => clearInterval(interval);
+  }, []);
+
+  // Initialize Telegram Web Apps SDK
+  useEffect(() => {
+    // @ts-ignore
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+
+    const user = tg.initDataUnsafe.user;
+
+    if (user) {
+      // You can now use the user data (user.id, user.username, etc.)
+      console.log('User ID:', user.id);
+      console.log('Username:', user.username);
+      // You can send this data to your backend to store in the database
+    }
+
   }, []);
 
   const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -121,14 +120,6 @@ const App: React.FC = () => {
     if (profit >= 1000) return `+${(profit / 1000).toFixed(2)}K`;
     return `+${profit}`;
   };
-
-  useEffect(() => {
-    const pointsPerSecond = Math.floor(profitPerHour / 3600);
-    const interval = setInterval(() => {
-      setPoints(prevPoints => prevPoints + pointsPerSecond);
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [profitPerHour]);
 
   return (
     <div className="bg-black flex justify-center">
